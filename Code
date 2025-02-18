@@ -1,0 +1,133 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+import java.util.Scanner;
+
+// Abstract class for Loan
+abstract class Loan {
+    protected double interestRate;
+    protected double loanAmount;
+
+    public Loan(double loanAmount) {
+        this.loanAmount = loanAmount;
+    }
+
+    // Abstract method to be implemented by subclasses
+    public abstract void setInterestRate();
+
+    public void calculateEMI(int tenure) {
+        double monthlyRate = interestRate / 12 / 100;
+        double emi = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, tenure)) /
+                     (Math.pow(1 + monthlyRate, tenure) - 1);
+        System.out.println("\n✅ EMI for " + this.getClass().getSimpleName() + ": ₹" + String.format("%.2f", emi) + " per month.");
+    }
+}
+
+// Home Loan Implementation
+class HomeLoan extends Loan {
+    public HomeLoan(double loanAmount) {
+        super(loanAmount);
+        setInterestRate();
+    }
+
+    @Override
+    public void setInterestRate() {
+        this.interestRate = 7.5; // Example interest rate in India
+    }
+}
+
+// Car Loan Implementation
+class CarLoan extends Loan {
+    public CarLoan(double loanAmount) {
+        super(loanAmount);
+        setInterestRate();
+    }
+
+    @Override
+    public void setInterestRate() {
+        this.interestRate = 9.5; // Example interest rate in India
+    }
+}
+
+// Personal Loan Implementation
+class PersonalLoan extends Loan {
+    public PersonalLoan(double loanAmount) {
+        super(loanAmount);
+        setInterestRate();
+    }
+
+    @Override
+    public void setInterestRate() {
+        this.interestRate = 13.0; // Example interest rate in India
+    }
+}
+
+// Factory Pattern for Loan Creation
+class LoanFactory {
+    public static Loan getLoan(String type, double amount) {
+        switch (type.toLowerCase()) {
+            case "home":
+                return new HomeLoan(amount);
+            case "car":
+                return new CarLoan(amount);
+            case "personal":
+                return new PersonalLoan(amount);
+            default:
+                throw new IllegalArgumentException("❌ Invalid loan type! Please choose Home, Car, or Personal.");
+        }
+    }
+}
+
+// AI-Based Loan Approval System
+class LoanApprovalAI {
+    public static String approveLoan(double creditScore, double salary, double loanAmount) {
+        double riskFactor = (loanAmount / salary) * (700 / creditScore); // Risk-based formula
+
+        if (creditScore < 600) {
+            return "❌ Rejected: Credit Score too low (Minimum required: 600).";
+        } else if (salary < 25000) { // Updated for Indian salary conditions
+            return "❌ Rejected: Salary below minimum required limit (₹25,000).";
+        } else if (riskFactor >= 3) {
+            return "❌ Rejected: High risk factor detected. Reduce loan amount or increase income.";
+        }
+        return "APPROVED"; // If all conditions are met
+    }
+}
+
+// Main Class to Run the System
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Get user input
+        System.out.print("\nEnter Loan Type (Home/Car/Personal): ");
+        String loanType = scanner.nextLine().trim().toLowerCase();
+
+        System.out.print("Enter Loan Amount (in ₹): ₹");
+        double loanAmount = scanner.nextDouble();
+
+        System.out.print("Enter Your Monthly Salary (in ₹): ₹");
+        double salary = scanner.nextDouble();
+
+        System.out.print("Enter Your Credit Score (300 - 850): ");
+        double creditScore = scanner.nextDouble();
+
+        // AI-based approval
+        String approvalResult = LoanApprovalAI.approveLoan(creditScore, salary, loanAmount);
+
+        if (approvalResult.equals("APPROVED")) {
+            Loan loan = LoanFactory.getLoan(loanType, loanAmount);
+            System.out.println("\n✅ " + loanType.toUpperCase() + " LOAN APPROVED!");
+            loan.calculateEMI(60); // Example tenure: 5 years
+        } else {
+            System.out.println("\n" + approvalResult);
+        }
+
+        scanner.close();
+    }
+}
